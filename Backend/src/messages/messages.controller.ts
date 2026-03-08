@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { MessagesService } from './messages.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { CreateMessageDto } from './entities/create-message.dto';
 import type { RequestWithUser } from 'src/common/interfaces/request-with-user.interface';
 @Controller('messages')
 @UseGuards(JwtAuthGuard)

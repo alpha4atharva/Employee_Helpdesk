@@ -25,6 +25,7 @@ export class TicketsController {
   @Roles(Role.EMPLOYEE)
   @Post()
   create( @Body() dto: CreateTicketDto, @Request() req, ){
+    console.log("Controller hit");
     return this.ticketsService.createTicket(dto, req.user);
   }
 

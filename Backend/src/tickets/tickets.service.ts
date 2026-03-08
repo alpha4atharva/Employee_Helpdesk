@@ -15,12 +15,10 @@ export class TicketsService {
 
     @InjectRepository(User)
     private userRepo: Repository<User>,
-  ) {}
+  ) { }
 
-  // 🔥 Employee creates ticket
   async createTicket(dto, user) {
-
-    // 1️⃣ find free IT agent
+    console.log("FULL USER OBJECT:", user);
     const freeAgent = await this.userRepo.findOne({
       where: {
         role: Role.IT_AGENT,
@@ -28,24 +26,39 @@ export class TicketsService {
       },
     });
 
+    console.log("FOUND AGENT:", freeAgent);
+
     if (!freeAgent) {
       throw new NotFoundException('No IT Agent available');
     }
 
-    // 2️⃣ set agent unavailable
-    freeAgent.isAvailable = false;
+    console.log("STEP 1 OK");
+
+    //freeAgent.isAvailable = false;
+
+    console.log("STEP 2 BEFORE SAVE");
+
     await this.userRepo.save(freeAgent);
 
-    // 3️⃣ create ticket
+    console.log("STEP 2 AFTER SAVE");
+    console.log("User ID:", user.userId);
+    console.log("Agent ID:", freeAgent.id);
+
     const ticket = this.ticketRepo.create({
       ...dto,
-      createdBy: user,
-      assignedTo: freeAgent,
+      createdBy: { id: user.userId },
+      assignedTo: { id: freeAgent.id },
       status: TicketStatus.IN_PROGRESS,
-      slaDeadline: new Date(Date.now() + 4 * 60 * 60 * 1000), // 4 hours SLA
+      slaDeadline: new Date(Date.now() + 4 * 60 * 60 * 1000),
     });
 
-    return this.ticketRepo.save(ticket);
+    console.log("STEP 3 BEFORE SAVE");
+
+    const savedTicket = await this.ticketRepo.save(ticket);
+
+    console.log("STEP 3 AFTER SAVE");
+
+    return savedTicket;
   }
 
   // 🔥 Agent updates status
@@ -62,9 +75,13 @@ export class TicketsService {
       throw new ForbiddenException('Not authorized');
     }
 
+    if (ticket.status === status) {
+      console.log("Status already same. No update needed.");
+      return ticket;
+    }
+
     ticket.status = status;
 
-    // If resolved → free agent
     if (status === TicketStatus.RESOLVED) {
       ticket.assignedTo.isAvailable = true;
       await this.userRepo.save(ticket.assignedTo);

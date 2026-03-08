@@ -4,7 +4,7 @@ import { OneToMany } from 'typeorm';
 import { Message } from 'src/messages/entities/message.entity';
 import { Ticket } from 'src/tickets/entities/ticket.entity';
 
-@Entity('users')
+@Entity({ name: 'user' })
 export class User {
 
   @PrimaryGeneratedColumn()

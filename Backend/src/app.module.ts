@@ -25,3 +25,6 @@ import { ScheduleModule } from '@nestjs/schedule';
   providers: [AppService],
 })
 export class AppModule {}
+console.log('DB NAME:', process.env.DB_NAME);
+console.log("DB_HOST:", process.env.DB_HOST);
+console.log("DB_USER:", process.env.DB_USERNAME);
