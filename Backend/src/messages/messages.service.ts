@@ -20,9 +20,12 @@ export class MessagesService {
 
     @InjectRepository(Ticket)
     private ticketRepo: Repository<Ticket>,
-  ) {}
 
-  async sendMessage(ticketId: number, content: string, user: User) {
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+  ) { }
+
+  async sendMessage(ticketId: number, content: string, user) {
 
     const ticket = await this.ticketRepo.findOne({
       where: { id: ticketId },
@@ -31,41 +34,47 @@ export class MessagesService {
 
     if (!ticket) throw new NotFoundException('Ticket not found');
 
-    // Only employee or assigned agent can chat
     if (
-      ticket.createdBy.id !== user.id &&
-      ticket.assignedTo?.id !== user.id
+      ticket.createdBy.id !== user.userId &&
+      ticket.assignedTo?.id !== user.userId
     ) {
       throw new ForbiddenException('Not allowed to chat on this ticket');
+    }
+    
+    const sender = await this.userRepo.findOne({
+      where: { id: user.userId },
+    });
+
+    if (!sender) {
+      throw new NotFoundException('User not found');
     }
 
     const message = this.messageRepo.create({
       content,
-      sender: user,
+      sender,
       ticket,
     });
 
-    return this.messageRepo.save(message);
+    return await this.messageRepo.save(message);
   }
 
   async getMessages(ticketId: number, user: User) {
-  const ticket = await this.ticketRepo.findOne({
-    where: { id: ticketId },
-    relations: ['createdBy', 'assignedTo'],
-  });
+    const ticket = await this.ticketRepo.findOne({
+      where: { id: ticketId },
+      relations: ['createdBy', 'assignedTo'],
+    });
 
-  if (!ticket) throw new NotFoundException();
+    if (!ticket) throw new NotFoundException();
 
-  if (
-    ticket.createdBy.id !== user.id &&
-    ticket.assignedTo?.id !== user.id
-  ) {
-    throw new ForbiddenException();
+    if (
+      ticket.createdBy.id !== user.id &&
+      ticket.assignedTo?.id !== user.id
+    ) {
+      throw new ForbiddenException();
+    }
+    return this.messageRepo.find({
+      where: { ticket: { id: ticketId } },
+      order: { createdAt: 'ASC' },
+    });
   }
-
-  return this.messageRepo.find({
-    where: { ticket: { id: ticketId } },
-    order: { createdAt: 'ASC' },
-  });
-}
 }
