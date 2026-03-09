@@ -66,12 +66,12 @@ export class MessagesService {
 
     if (!ticket) throw new NotFoundException();
 
-    if (
+    /*if (
       ticket.createdBy.id !== user.id &&
       ticket.assignedTo?.id !== user.id
     ) {
       throw new ForbiddenException();
-    }
+    }*/
     return this.messageRepo.find({
       where: { ticket: { id: ticketId } },
       order: { createdAt: 'ASC' },
