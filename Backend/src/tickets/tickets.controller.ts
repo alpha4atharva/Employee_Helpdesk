@@ -37,18 +37,18 @@ export class TicketsController {
     return this.ticketsService.findAll();
   }
 
-  // Single ticket by ID
-  @Get(':id')
-  findById(@Param('id', ParseIntPipe) id: number) {
-    return this.ticketsService.findById(id);
-  }
-
   // Employee gets their own tickets
   @UseGuards(RolesGuard)
   @Roles(Role.EMPLOYEE)
   @Get('my-tickets/list')
   findByEmployee(@Request() req) {
     return this.ticketsService.findByEmployee(req.user.userId);
+  }
+
+  // Single ticket by ID
+  @Get(':id')
+  findById(@Param('id', ParseIntPipe) id: number) {
+    return this.ticketsService.findById(id);
   }
 
   // Agent updates ticket status
@@ -61,5 +61,17 @@ export class TicketsController {
     @Request() req,
   ) {
     return this.ticketsService.updateStatus(id, status, req.user);
+  }
+
+  // IT Agent assigns an asset to a ticket
+  @UseGuards(RolesGuard)
+  @Roles(Role.IT_AGENT)
+  @Patch(':id/assign-asset')
+  assignAsset(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('assetId', ParseIntPipe) assetId: number,
+    @Request() req,
+  ) {
+    return this.ticketsService.assignAssetToTicket(id, assetId, req.user.userId);
   }
 }

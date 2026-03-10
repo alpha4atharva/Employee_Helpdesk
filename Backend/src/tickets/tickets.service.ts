@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Ticket } from './entities/ticket.entity';
 import { User } from '../users/entities/user.entity';
+import { Asset } from '../assets/entities/asset.entity';
 import { TicketStatus } from '../common/enums/ticket-status.enum';
 import { TicketPriority } from '../common/enums/ticket-priority.enum';
 import { Role } from '../common/enums/role.enum';
@@ -17,10 +18,12 @@ export class TicketsService {
 
     @InjectRepository(User)
     private userRepo: Repository<User>,
+
+    @InjectRepository(Asset)
+    private assetRepo: Repository<Asset>,
   ) { }
 
   async createTicket(dto: CreateTicketDto, user: { userId: number; role: string }) {
-    // Find a free IT agent to auto-assign
     const freeAgent = await this.userRepo.findOne({
       where: {
         role: Role.IT_AGENT,
@@ -37,29 +40,26 @@ export class TicketsService {
     };
 
     if (freeAgent) {
-      // Auto-assign to available agent
       ticketData.assignedTo = { id: freeAgent.id } as User;
       ticketData.status = TicketStatus.IN_PROGRESS;
-      ticketData.slaDeadline = new Date(Date.now() + 4 * 60 * 60 * 1000); // 4 hours SLA
+      ticketData.slaDeadline = new Date(Date.now() + 4 * 60 * 60 * 1000);
       await this.userRepo.save(freeAgent);
     } else {
-      // No agent available — create as OPEN
       ticketData.status = TicketStatus.OPEN;
     }
 
     const ticket = this.ticketRepo.create(ticketData);
     const savedTicket = await this.ticketRepo.save(ticket);
 
-    // Return with relations loaded
     return this.ticketRepo.findOne({
       where: { id: savedTicket.id },
-      relations: ['createdBy', 'assignedTo'],
+      relations: ['createdBy', 'assignedTo', 'asset'],
     });
   }
 
   async findAll() {
     return this.ticketRepo.find({
-      relations: ['createdBy', 'assignedTo'],
+      relations: ['createdBy', 'assignedTo', 'asset'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -67,7 +67,7 @@ export class TicketsService {
   async findById(id: number) {
     const ticket = await this.ticketRepo.findOne({
       where: { id },
-      relations: ['createdBy', 'assignedTo'],
+      relations: ['createdBy', 'assignedTo', 'asset'],
     });
     if (!ticket) throw new NotFoundException('Ticket not found');
     return ticket;
@@ -76,7 +76,7 @@ export class TicketsService {
   async findByEmployee(userId: number) {
     return this.ticketRepo.find({
       where: { createdBy: { id: userId } },
-      relations: ['createdBy', 'assignedTo'],
+      relations: ['createdBy', 'assignedTo', 'asset'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -85,7 +85,7 @@ export class TicketsService {
   async updateStatus(ticketId: number, status: TicketStatus, user: { userId: number; role: string }) {
     const ticket = await this.ticketRepo.findOne({
       where: { id: ticketId },
-      relations: ['assignedTo'],
+      relations: ['assignedTo', 'asset'],
     });
 
     if (!ticket) throw new NotFoundException('Ticket not found');
@@ -103,8 +103,53 @@ export class TicketsService {
     if (status === TicketStatus.RESOLVED) {
       ticket.assignedTo.isAvailable = true;
       await this.userRepo.save(ticket.assignedTo);
+      // Asset stays ASSIGNED to the employee — it does not go back to AVAILABLE
     }
 
     return this.ticketRepo.save(ticket);
+  }
+
+  /**
+   * IT Agent assigns an asset to a ticket.
+   * Sets the asset status to ASSIGNED and assigned_to = ticket creator's ID.
+   */
+  async assignAssetToTicket(
+    ticketId: number,
+    assetId: number,
+    userId: number,
+  ) {
+    const ticket = await this.ticketRepo.findOne({
+      where: { id: ticketId },
+      relations: ['createdBy', 'assignedTo', 'asset'],
+    });
+    if (!ticket) throw new NotFoundException('Ticket not found');
+
+    // Only the assigned IT agent can assign assets
+    if (!ticket.assignedTo || ticket.assignedTo.id !== userId) {
+      throw new ForbiddenException('Only the assigned IT agent can assign assets');
+    }
+
+    // If there was a previously assigned asset, unassign it
+    if (ticket.asset) {
+      ticket.asset.assigned_to = null as any;
+      ticket.asset.status = 'AVAILABLE';
+      await this.assetRepo.save(ticket.asset);
+    }
+
+    // Assign the new asset
+    const asset = await this.assetRepo.findOneBy({ id: assetId });
+    if (!asset) throw new NotFoundException('Asset not found');
+
+    asset.status = 'ASSIGNED';
+    asset.assigned_to = ticket.createdBy?.id ?? 0;
+    await this.assetRepo.save(asset);
+
+    ticket.asset = asset;
+    await this.ticketRepo.save(ticket);
+
+    return this.ticketRepo.findOne({
+      where: { id: ticketId },
+      relations: ['createdBy', 'assignedTo', 'asset'],
+    });
   }
 }

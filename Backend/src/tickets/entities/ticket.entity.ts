@@ -10,6 +10,7 @@ import { User } from '../../users/entities/user.entity';
 import { TicketStatus } from '../../common/enums/ticket-status.enum';
 import { TicketPriority } from '../../common/enums/ticket-priority.enum';
 import { Message } from 'src/messages/entities/message.entity';
+import { Asset } from 'src/assets/entities/asset.entity';
 
 @Entity()
 export class Ticket {
@@ -57,4 +58,7 @@ export class Ticket {
 
   @OneToMany(() => Message, (message) => message.ticket)
   messages: Message[];
+
+  @ManyToOne(() => Asset, { nullable: true, eager: true, onDelete: 'SET NULL' })
+  asset: Asset;
 }
