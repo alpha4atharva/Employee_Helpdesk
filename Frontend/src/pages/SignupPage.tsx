@@ -129,7 +129,7 @@ const SignupPage = () => {
             >
               <option value="EMPLOYEE" className="bg-gray-900">Employee</option>
               <option value="IT_AGENT" className="bg-gray-900">IT Support</option>
-              
+              <option value="ADMIN" className="bg-gray-900">Admin</option>
             </select>
           </div>
 
