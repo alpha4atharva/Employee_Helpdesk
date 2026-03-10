@@ -39,12 +39,13 @@ export class Ticket {
   })
   status: TicketStatus;
 
-  @ManyToOne(() => User, (user) => user.createdTickets, { eager: true })
+  @ManyToOne(() => User, (user) => user.createdTickets, { eager: true, nullable: true, onDelete: 'SET NULL' })
   createdBy: User;
 
   @ManyToOne(() => User, (user) => user.assignedTickets, {
     nullable: true,
     eager: true,
+    onDelete: 'SET NULL',
   })
   assignedTo: User;
 

@@ -16,7 +16,7 @@ export class Message {
   @Column('text')
   content: string;
 
-  @ManyToOne(() => User, (user) => user.messages, { eager: true })
+  @ManyToOne(() => User, (user) => user.messages, { eager: true, nullable: true, onDelete: 'SET NULL' })
   sender: User;
 
   @ManyToOne(() => Ticket, (ticket) => ticket.messages, {

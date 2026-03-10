@@ -8,6 +8,7 @@ import { MessagesModule } from './messages/messages.module';
 import { SlaModule } from './sla/sla.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
+import { AssetsModule } from './assets/assets.module';
 @Module({
   imports: [AuthModule, UsersModule, TicketsModule, MessagesModule, SlaModule, TypeOrmModule.forRoot({
       type: 'postgres',
@@ -20,6 +21,7 @@ import { ScheduleModule } from '@nestjs/schedule';
       synchronize: true, 
     }),
   ScheduleModule.forRoot(),
+  AssetsModule,
 ],
   controllers: [AppController],
   providers: [AppService],
