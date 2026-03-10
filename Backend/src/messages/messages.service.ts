@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 
 import { Message } from './entities/message.entity';
 import { Ticket } from '../tickets/entities/ticket.entity';
-
+import { User } from '../users/entities/user.entity';
 
 // Service handles application logic
 @Injectable()
@@ -24,6 +24,11 @@ export class MessagesService {
 // Repository for ticket table
     @InjectRepository(Ticket)
     private ticketRepo: Repository<Ticket>,
+
+    // Repository for user table
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+  ) {}
 
   async sendMessage(ticketId: number, content: string, user: { userId: number; role: string }) {
     const ticket = await this.ticketRepo.findOne({

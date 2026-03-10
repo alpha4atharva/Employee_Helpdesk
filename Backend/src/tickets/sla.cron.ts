@@ -31,6 +31,6 @@ export class SlaCronService {
       await this.ticketRepo.save(ticket);
     }
 
-    console.log('SLA Check Completed');
+    //console.log('SLA Check Completed');
   }
 }
