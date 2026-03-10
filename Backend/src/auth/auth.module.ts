@@ -8,13 +8,13 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from 'src/users/users.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
     UsersModule,
-    AuthModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,   

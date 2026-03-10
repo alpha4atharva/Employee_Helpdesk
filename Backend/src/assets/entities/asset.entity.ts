@@ -4,7 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
+import { User } from '../../users/entities/user.entity';
 
 @Entity('asset')
 export class Asset {
@@ -25,6 +28,11 @@ export class Asset {
 
   @Column({ nullable: true })
   assigned_to: number;
+
+  /** Eager relation to the User this asset is assigned to */
+  @ManyToOne(() => User, { nullable: true, eager: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'assigned_to' })
+  assignedUser: User;
 
   @CreateDateColumn()
   created_at: Date;

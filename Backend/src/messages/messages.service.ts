@@ -11,22 +11,26 @@ import { Message } from './entities/message.entity';
 import { Ticket } from '../tickets/entities/ticket.entity';
 import { User } from '../users/entities/user.entity';
 
+// Service handles application logic
 @Injectable()
 export class MessagesService {
 
   constructor(
+    // Repository gives access to message table
     @InjectRepository(Message)
     private messageRepo: Repository<Message>,
 
+
+// Repository for ticket table
     @InjectRepository(Ticket)
     private ticketRepo: Repository<Ticket>,
 
+    // Repository for user table
     @InjectRepository(User)
     private userRepo: Repository<User>,
-  ) { }
+  ) {}
 
-  async sendMessage(ticketId: number, content: string, user) {
-
+  async sendMessage(ticketId: number, content: string, user: { userId: number; role: string }) {
     const ticket = await this.ticketRepo.findOne({
       where: { id: ticketId },
       relations: ['createdBy', 'assignedTo'],
@@ -34,6 +38,7 @@ export class MessagesService {
 
     if (!ticket) throw new NotFoundException('Ticket not found');
 
+    // Only the ticket creator or assigned agent can chat
     if (
       ticket.createdBy.id !== user.userId &&
       ticket.assignedTo?.id !== user.userId
@@ -51,29 +56,38 @@ export class MessagesService {
 
     const message = this.messageRepo.create({
       content,
-      sender,
+      sender: { id: user.userId } as any,
       ticket,
     });
 
-    return await this.messageRepo.save(message);
+    const saved = await this.messageRepo.save(message);
+
+    // Return with sender relation loaded
+    return this.messageRepo.findOne({
+      where: { id: saved.id },
+      relations: ['sender'],
+    });
   }
 
-  async getMessages(ticketId: number, user: User) {
+  async getMessages(ticketId: number, user: { userId: number; role: string }) {
     const ticket = await this.ticketRepo.findOne({
       where: { id: ticketId },
       relations: ['createdBy', 'assignedTo'],
     });
 
-    if (!ticket) throw new NotFoundException();
+    if (!ticket) throw new NotFoundException('Ticket not found');
 
-    /*if (
-      ticket.createdBy.id !== user.id &&
-      ticket.assignedTo?.id !== user.id
+    // Only the ticket creator or assigned agent can view messages
+    if (
+      ticket.createdBy.id !== user.userId &&
+      ticket.assignedTo?.id !== user.userId
     ) {
-      throw new ForbiddenException();
-    }*/
+      throw new ForbiddenException('Not allowed to view messages on this ticket');
+    }
+
     return this.messageRepo.find({
       where: { ticket: { id: ticketId } },
+      relations: ['sender'],
       order: { createdAt: 'ASC' },
     });
   }
