@@ -87,6 +87,7 @@ export class TicketsService {
       where: { id: ticketId },
       relations: ['assignedTo', 'asset'],
     });
+    
 
     if (!ticket) throw new NotFoundException('Ticket not found');
 

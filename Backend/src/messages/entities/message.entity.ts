@@ -8,6 +8,8 @@ import {
 import { User } from 'src/users/entities/user.entity';
 import { Ticket } from 'src/tickets/entities/ticket.entity';
 
+
+// Represents "message" table in the database
 @Entity()
 export class Message {
   @PrimaryGeneratedColumn()
@@ -24,6 +26,8 @@ export class Message {
   })
   ticket: Ticket;
 
+
+    // Automatically store the time message was created
   @CreateDateColumn()
   createdAt: Date;
 }

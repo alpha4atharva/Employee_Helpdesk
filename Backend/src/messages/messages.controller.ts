@@ -23,6 +23,8 @@ export class MessagesController {
     @Body() createMessageDto: CreateMessageDto,
     @Request() req,
   ) {
+    console.log("Logging in controller",req.user);
+    
     return this.messagesService.sendMessage(
       ticketId,
       createMessageDto.content,
