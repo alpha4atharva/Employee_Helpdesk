@@ -18,7 +18,20 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/Ticketing-System
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
+            sed -i 's|build: ./backend|build: ./Backend|' docker-compose.yml
+            sed -i 's|./backend/.env|./Backend/.env|' docker-compose.yml
+            sed -i 's|build: ./frontend|build: ./Frontend|' docker-compose.yml
+            cat > Backend/.env << 'EOF'
+            DB_HOST=postgres
+            DB_PORT=5432
+            DB_USERNAME=postgres
+            DB_PASSWORD=Qwe123!@#
+            DB_NAME=mini-project
+            JWT_SECRET=supersecretjwtkey2024
+            PORT=3000
+            EOF
             docker compose down
             docker compose up --build -d
             docker image prune -f
