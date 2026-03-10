@@ -1,6 +1,6 @@
 # 🧑‍💼 Employee Helpdesk & Asset Management System
 
-A full-stack web application designed to streamline **employee support, ticket handling, and asset allocation** within an organization.  
+A full-stack web application designed to streamline **employee support, ticket handling, and asset allocation** .  
 The system provides a centralized helpdesk for issue tracking and a secure, token-based mechanism for managing and allocating company assets.
 
 ---
