@@ -1,6 +1,4 @@
-/**
- * AdminDashboard - Premium admin view with full user management, tickets, and assets.
- */
+
 
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";

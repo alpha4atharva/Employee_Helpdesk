@@ -1,6 +1,3 @@
-/**
- * LoginPage - Premium login with gradient accent and glassmorphism card.
- */
 
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";

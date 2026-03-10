@@ -1,5 +1,5 @@
 /**
- * SignupPage - Premium registration with gradient accent.
+ * SignupPage - registration with gradient accent.
  */
 
 import { useState } from "react";

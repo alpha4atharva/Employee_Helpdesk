@@ -1,6 +1,3 @@
-/**
- * EmployeeDashboard - Premium employee view with ticket creation and list.
- */
 
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";

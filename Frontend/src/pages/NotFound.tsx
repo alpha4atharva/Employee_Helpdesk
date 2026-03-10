@@ -1,3 +1,5 @@
+// this is the 404 page that is shown when a user tries to access a route that does not exist. It also logs the attempted route to the console for debugging purposes.
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
 

@@ -1,5 +1,5 @@
 /**
- * ITDashboard - Premium IT agent view with tickets and asset inventory.
+ * ITDashboard - this is  IT persons  view with tickets and asset inventory.
  */
 
 import { useState, useEffect } from "react";

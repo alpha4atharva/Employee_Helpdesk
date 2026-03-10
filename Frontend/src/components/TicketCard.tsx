@@ -2,6 +2,7 @@
  * TicketCard - Premium styled ticket card with gradient accent and hover effects.
  */
 
+import { UNSAFE_WithHydrateFallbackProps } from "react-router-dom";
 import type { Ticket } from "../types/types";
 
 interface TicketCardProps {
@@ -54,6 +55,7 @@ const TicketCard = ({ ticket, onAssign, onResolve, onClick }: TicketCardProps) =
     <div
       className={`bg-card rounded-xl border p-5 shadow-sm hover:shadow-md transition-all duration-200 ${onClick ? "cursor-pointer hover:border-[hsl(234,85%,60%)]/30 hover:-translate-y-0.5" : ""}`}
       onClick={() => onClick?.(ticket)}
+      
     >
       {/* Header: ID + Status */}
       <div className="flex items-center justify-between mb-3">
