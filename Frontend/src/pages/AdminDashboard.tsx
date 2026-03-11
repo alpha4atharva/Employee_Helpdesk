@@ -145,12 +145,12 @@ const AdminDashboard = () => {
   if (!user) return null;
 
   const overviewStats = [
-    { label: "Employees", value: employees.length, color: "text-primary", bg: "bg-primary/10" },
-    { label: "IT Staff", value: itPersons.length, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "Tickets", value: tickets.length, color: "text-amber-500", bg: "bg-amber-500/10" },
-    { label: "Resolved", value: tickets.filter((t) => t.status === "RESOLVED").length, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { label: "SLA Breached", value: tickets.filter((t) => t.status === "SLA_BREACHED").length, color: "text-red-500", bg: "bg-red-500/10" },
-    { label: "Assets", value: assets.length, color: "text-violet-500", bg: "bg-violet-500/10" },
+    { label: "Employees", value: employees.length, color: "text-white", bg: "bg-white/10" },
+    { label: "IT Staff", value: itPersons.length, color: "text-white/70", bg: "bg-white/5" },
+    { label: "Tickets", value: tickets.length, color: "text-white/70", bg: "bg-white/5" },
+    { label: "Resolved", value: tickets.filter((t) => t.status === "RESOLVED").length, color: "text-white/70", bg: "bg-white/5" },
+    { label: "SLA Breached", value: tickets.filter((t) => t.status === "SLA_BREACHED").length, color: "text-white/70", bg: "bg-white/5" },
+    { label: "Assets", value: assets.length, color: "text-white/70", bg: "bg-white/5" },
   ];
 
   const renderUserTable = (userList: User[], showActiveTickets: boolean) => (
@@ -177,8 +177,8 @@ const AdminDashboard = () => {
                 </TableCell>
               )}
               <TableCell>
-                <Badge variant={u.isAvailable ? "secondary" : "destructive"} className="gap-1.5 text-xs">
-                  <span className={`w-1.5 h-1.5 rounded-full ${u.isAvailable ? "bg-emerald-500" : "bg-red-500"}`} />
+                <Badge variant={u.isAvailable ? "secondary" : "outline"} className="gap-1.5 text-xs">
+                  <span className={`w-1.5 h-1.5 rounded-full ${u.isAvailable ? "bg-white" : "bg-white/40"}`} />
                   {u.isAvailable ? "Available" : "Busy"}
                 </Badge>
               </TableCell>
@@ -203,7 +203,7 @@ const AdminDashboard = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-red-500 hover:text-red-400 hover:bg-red-500/10 text-xs h-7"
+                    className="text-white/50 hover:text-white hover:bg-white/10 text-xs h-7"
                     onClick={() => handleDeleteUser(u.id)}
                   >
                     Delete
@@ -277,7 +277,7 @@ const AdminDashboard = () => {
                 </CardHeader>
                 <CardContent>
                   {userError && <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-4">{userError}</div>}
-                  {userSuccess && <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-sm p-3 rounded-lg mb-4">{userSuccess}</div>}
+                  {userSuccess && <div className="bg-white/5 border border-white/10 text-white/80 text-sm p-3 rounded-lg mb-4">{userSuccess}</div>}
                   <form onSubmit={handleCreateUser} className="grid grid-cols-1 md:grid-cols-5 gap-3">
                     <Input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="Full name" />
                     <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required placeholder="Email address" />
@@ -363,7 +363,7 @@ const AdminDashboard = () => {
                         <TableCell className="text-muted-foreground">{asset.description || "—"}</TableCell>
                         <TableCell>
                           <Badge variant={asset.status === "AVAILABLE" ? "secondary" : "outline"} className="gap-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full ${asset.status === "AVAILABLE" ? "bg-emerald-500" : "bg-amber-500"}`} />
+                            <span className={`w-1.5 h-1.5 rounded-full ${asset.status === "AVAILABLE" ? "bg-white" : "bg-white/40"}`} />
                             {asset.status}
                           </Badge>
                         </TableCell>
@@ -378,7 +378,7 @@ const AdminDashboard = () => {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10 text-xs h-7"
+                            className="text-white/50 hover:text-white hover:bg-white/10 text-xs h-7"
                             onClick={() => handleDeleteAsset(asset.id)}
                           >
                             Delete

@@ -70,11 +70,11 @@ const ITDashboard = () => {
   if (!user) return null;
 
   const stats: { label: string; count: number; value: FilterType; color: string; bg: string }[] = [
-    { label: "Total", count: tickets.length, value: "all", color: "text-primary", bg: "bg-primary/10" },
-    { label: "Open", count: tickets.filter((t) => t.status === "OPEN").length, value: "open", color: "text-amber-500", bg: "bg-amber-500/10" },
-    { label: "In Progress", count: tickets.filter((t) => t.status === "IN_PROGRESS").length, value: "in-progress", color: "text-blue-500", bg: "bg-blue-500/10" },
-    { label: "Resolved", count: tickets.filter((t) => t.status === "RESOLVED").length, value: "resolved", color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { label: "Breached", count: tickets.filter((t) => t.status === "SLA_BREACHED").length, value: "breached", color: "text-red-500", bg: "bg-red-500/10" },
+    { label: "Total", count: tickets.length, value: "all", color: "text-white", bg: "bg-white/10" },
+    { label: "Open", count: tickets.filter((t) => t.status === "OPEN").length, value: "open", color: "text-white/70", bg: "bg-white/5" },
+    { label: "In Progress", count: tickets.filter((t) => t.status === "IN_PROGRESS").length, value: "in-progress", color: "text-white/70", bg: "bg-white/5" },
+    { label: "Resolved", count: tickets.filter((t) => t.status === "RESOLVED").length, value: "resolved", color: "text-white/70", bg: "bg-white/5" },
+    { label: "Breached", count: tickets.filter((t) => t.status === "SLA_BREACHED").length, value: "breached", color: "text-white/70", bg: "bg-white/5" },
   ];
 
   return (
@@ -148,9 +148,9 @@ const ITDashboard = () => {
             {/* Asset stats */}
             <div className="grid grid-cols-3 gap-4">
               {[
-                { label: "Total Assets", value: assets.length, color: "text-primary", bg: "bg-primary/10" },
-                { label: "Available", value: availableAssets.length, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-                { label: "Assigned", value: assignedAssets.length, color: "text-amber-500", bg: "bg-amber-500/10" },
+                { label: "Total Assets", value: assets.length, color: "text-white", bg: "bg-white/10" },
+                { label: "Available", value: availableAssets.length, color: "text-white/70", bg: "bg-white/5" },
+                { label: "Assigned", value: assignedAssets.length, color: "text-white/70", bg: "bg-white/5" },
               ].map((stat) => (
                 <Card key={stat.label} className="hover:shadow-md transition-shadow">
                   <CardContent className="p-5 flex items-start justify-between">
@@ -195,7 +195,7 @@ const ITDashboard = () => {
                         <TableCell className="text-muted-foreground">{asset.description || "—"}</TableCell>
                         <TableCell>
                           <Badge variant={asset.status === "AVAILABLE" ? "secondary" : "outline"} className="gap-1.5">
-                            <span className={`w-1.5 h-1.5 rounded-full ${asset.status === "AVAILABLE" ? "bg-emerald-500" : "bg-amber-500"}`} />
+                            <span className={`w-1.5 h-1.5 rounded-full ${asset.status === "AVAILABLE" ? "bg-white" : "bg-white/40"}`} />
                             {asset.status}
                           </Badge>
                         </TableCell>

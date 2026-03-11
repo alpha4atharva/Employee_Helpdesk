@@ -16,17 +16,17 @@ interface TicketCardProps {
 }
 
 const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; dot: string }> = {
-  OPEN: { label: "Open", variant: "outline", dot: "bg-amber-500" },
-  IN_PROGRESS: { label: "In Progress", variant: "default", dot: "bg-blue-500" },
-  RESOLVED: { label: "Resolved", variant: "secondary", dot: "bg-emerald-500" },
+  OPEN: { label: "Open", variant: "outline", dot: "bg-white/60" },
+  IN_PROGRESS: { label: "In Progress", variant: "default", dot: "bg-white/80" },
+  RESOLVED: { label: "Resolved", variant: "secondary", dot: "bg-white" },
   CLOSED: { label: "Closed", variant: "secondary", dot: "bg-gray-400" },
-  SLA_BREACHED: { label: "SLA Breached", variant: "destructive", dot: "bg-red-500 animate-pulse-soft" },
+  SLA_BREACHED: { label: "SLA Breached", variant: "destructive", dot: "bg-white/50 animate-pulse-soft" },
 };
 
 const priorityConfig: Record<string, { color: string }> = {
-  CRITICAL: { color: "text-red-500" },
-  HIGH: { color: "text-orange-500" },
-  MEDIUM: { color: "text-blue-500" },
+  CRITICAL: { color: "text-white/80" },
+  HIGH: { color: "text-white/70" },
+  MEDIUM: { color: "text-white/60" },
   LOW: { color: "text-muted-foreground" },
 };
 
@@ -39,7 +39,7 @@ function getSlaInfo(ticket: Ticket) {
   const diff = deadline.getTime() - now.getTime();
 
   if (diff <= 0 || ticket.status === "SLA_BREACHED") {
-    return { text: "Breached", color: "text-red-500 font-semibold" };
+    return { text: "Breached", color: "text-white/60 font-semibold" };
   }
 
   const hours = Math.floor(diff / (1000 * 60 * 60));
@@ -103,9 +103,9 @@ const TicketCard = ({ ticket, onAssign, onResolve, onClick }: TicketCardProps) =
 
         {/* Assigned asset chip */}
         {ticket.asset && (
-          <div className="flex items-center gap-2 px-3 py-2 bg-emerald-500/5 border border-emerald-500/20 rounded-lg">
+          <div className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 rounded-lg">
             <span className="text-xs">📦</span>
-            <span className="text-xs font-semibold text-emerald-500">
+            <span className="text-xs font-semibold text-white/80">
               {ticket.asset.name}
             </span>
             <span className="text-[10px] font-mono text-muted-foreground">
@@ -144,7 +144,7 @@ const TicketCard = ({ ticket, onAssign, onResolve, onClick }: TicketCardProps) =
               <Button
                 size="sm"
                 variant="secondary"
-                className="flex-1 text-xs bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border border-emerald-500/20"
+                className="flex-1 text-xs bg-white/10 text-white hover:bg-white/20 border border-white/20"
                 onClick={() => onResolve(ticket.id)}
               >
                 Mark Resolved

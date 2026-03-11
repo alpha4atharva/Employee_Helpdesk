@@ -1,5 +1,5 @@
 /**
- * LoginPage - Premium login page using shadcn/ui components.
+ * LoginPage - Premium login page with Three.js shader animation background.
  */
 
 import { useState } from "react";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { ShaderAnimation } from "../components/ShaderAnimation";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -43,15 +44,9 @@ const LoginPage = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
-      style={{ background: "linear-gradient(135deg, hsl(234 85% 55%), hsl(262 80% 55%), hsl(234 85% 40%))" }}
-    >
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-white/5 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 rounded-full bg-white/5 blur-3xl" />
-      </div>
+    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Shader animation background */}
+      <ShaderAnimation />
 
       <div className="w-full max-w-md relative z-10 animate-fade-in-up">
         {/* Header */}
@@ -66,7 +61,7 @@ const LoginPage = () => {
         </div>
 
         {/* Login Card */}
-        <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl">
+        <Card className="bg-black/40 backdrop-blur-xl border-white/15 shadow-2xl">
           <CardHeader className="pb-4">
             <CardTitle className="text-white text-lg">Sign In</CardTitle>
             <CardDescription className="text-white/50">
@@ -114,7 +109,7 @@ const LoginPage = () => {
                 id="login-submit"
                 type="submit"
                 disabled={loading}
-                className="w-full h-11 bg-white text-primary font-semibold hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl"
+                className="w-full h-11 bg-white text-black font-semibold hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl"
               >
                 {loading ? (
                   <span className="flex items-center gap-2">

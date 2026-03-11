@@ -166,8 +166,8 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
 
           {/* Currently assigned asset */}
           {ticket.asset && (
-            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
-              <p className="text-xs text-emerald-600 uppercase tracking-wider font-semibold mb-2">Assigned Asset</p>
+            <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+              <p className="text-xs text-white/60 uppercase tracking-wider font-semibold mb-2">Assigned Asset</p>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div>
                   <p className="text-muted-foreground text-xs">Name</p>
@@ -234,7 +234,7 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
                     onClick={() => handleStatusUpdate("RESOLVED")}
                     size="sm"
                     variant="secondary"
-                    className="bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 border border-emerald-500/20"
+                    className="bg-white/10 text-white hover:bg-white/20 border border-white/20"
                   >
                     Mark Resolved
                   </Button>
