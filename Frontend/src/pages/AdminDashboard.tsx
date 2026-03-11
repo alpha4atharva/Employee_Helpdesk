@@ -1,5 +1,4 @@
 
-
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import TicketCard from "../components/TicketCard";
@@ -9,6 +8,26 @@ import * as userService from "../services/userService";
 import * as ticketService from "../services/ticketService";
 import * as assetService from "../services/assetService";
 import type { User, Ticket, Asset, UserRole } from "../types/types";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const roleOptions: { value: UserRole; label: string }[] = [
   { value: "EMPLOYEE", label: "Employee" },
@@ -21,7 +40,6 @@ const AdminDashboard = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
-  const [activeTab, setActiveTab] = useState<"employees" | "it" | "tickets" | "assets">("employees");
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
 
   // New user form
@@ -57,7 +75,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // --- User Management ---
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
     setUserSubmitting(true);
@@ -98,7 +115,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // --- Asset Management ---
   const handleCreateAsset = async (e: React.FormEvent) => {
     e.preventDefault();
     setAssetSubmitting(true);
@@ -129,80 +145,85 @@ const AdminDashboard = () => {
   if (!user) return null;
 
   const overviewStats = [
-    { label: "Employees", value: employees.length, gradient: "#D2B48C" },
-    { label: "IT Staff", value: itPersons.length, gradient: "#D2B48C" },
-    { label: "Tickets", value: tickets.length, gradient: "#D2B48C" },
-    { label: "Resolved", value: tickets.filter((t) => t.status === "RESOLVED").length, gradient: "#D2B48C" },
-    { label: "SLA Breached", value: tickets.filter((t) => t.status === "SLA_BREACHED").length, gradient: "#D2B48C" },
-    { label: "Assets", value: assets.length, gradient: "#D2B48C" },
+    { label: "Employees", value: employees.length, color: "text-primary", bg: "bg-primary/10" },
+    { label: "IT Staff", value: itPersons.length, color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: "Tickets", value: tickets.length, color: "text-amber-500", bg: "bg-amber-500/10" },
+    { label: "Resolved", value: tickets.filter((t) => t.status === "RESOLVED").length, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { label: "SLA Breached", value: tickets.filter((t) => t.status === "SLA_BREACHED").length, color: "text-red-500", bg: "bg-red-500/10" },
+    { label: "Assets", value: assets.length, color: "text-violet-500", bg: "bg-violet-500/10" },
   ];
 
-  const inputClass = "px-4 py-2.5 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-[#D2B48C] focus:border-transparent transition-all text-sm";
-
-  const tabs = [
-    { key: "employees", label: "Employees", count: employees.length },
-    { key: "it", label: "IT Staff", count: itPersons.length },
-    { key: "tickets", label: "All Tickets", count: tickets.length },
-    { key: "assets", label: "Assets", count: availableAssets.length },
-  ] as const;
-
   const renderUserTable = (userList: User[], showActiveTickets: boolean) => (
-    <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
-      <table className="w-full text-sm">
-        <thead>
-          <tr className="border-b bg-muted/50">
-            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Name</th>
-            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Email</th>
-            {showActiveTickets && <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Active Tickets</th>}
-            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Status</th>
-            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Role</th>
-            <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
+    <Card>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            {showActiveTickets && <TableHead>Active Tickets</TableHead>}
+            <TableHead>Status</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {userList.map((u, i) => (
-            <tr key={u.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
-              <td className="p-4 font-semibold text-foreground">{u.name}</td>
-              <td className="p-4 text-muted-foreground">{u.email}</td>
+            <TableRow key={u.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
+              <TableCell className="font-semibold">{u.name}</TableCell>
+              <TableCell className="text-muted-foreground">{u.email}</TableCell>
               {showActiveTickets && (
-                <td className="p-4">
-                  <span className="bg-muted px-2 py-0.5 rounded-full text-xs font-semibold text-foreground">{u.activeTicketsCount}</span>
-                </td>
+                <TableCell>
+                  <Badge variant="secondary" className="text-xs">{u.activeTicketsCount}</Badge>
+                </TableCell>
               )}
-              <td className="p-4">
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-full font-semibold ${u.isAvailable ? "bg-[#D2B48C]/10 text-[#D2B48C]" : "bg-red-500/10 text-red-500"}`}>
+              <TableCell>
+                <Badge variant={u.isAvailable ? "secondary" : "destructive"} className="gap-1.5 text-xs">
+                  <span className={`w-1.5 h-1.5 rounded-full ${u.isAvailable ? "bg-emerald-500" : "bg-red-500"}`} />
                   {u.isAvailable ? "Available" : "Busy"}
-                </span>
-              </td>
-              <td className="p-4">
-                <select
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <Select
                   value={u.role}
-                  onChange={(e) => handleRoleChange(u.id, e.target.value as UserRole)}
+                  onValueChange={(value) => handleRoleChange(u.id, value as UserRole)}
                   disabled={u.id === user.id}
-                  className="px-2 py-1 bg-muted border border-border rounded-lg text-xs font-medium text-foreground focus:outline-none focus:ring-2 focus:ring-[#D2B48C] disabled:opacity-50"
                 >
-                  {roleOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-              </td>
-              <td className="p-4">
+                  <SelectTrigger className="h-8 w-[120px] text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roleOptions.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </TableCell>
+              <TableCell>
                 {u.id !== user.id ? (
-                  <button onClick={() => handleDeleteUser(u.id)} className="text-red-500 hover:text-red-400 text-xs font-semibold hover:underline transition-colors">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-red-500 hover:text-red-400 hover:bg-red-500/10 text-xs h-7"
+                    onClick={() => handleDeleteUser(u.id)}
+                  >
                     Delete
-                  </button>
+                  </Button>
                 ) : (
                   <span className="text-xs text-muted-foreground italic">You</span>
                 )}
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           ))}
           {userList.length === 0 && (
-            <tr><td colSpan={showActiveTickets ? 6 : 5} className="p-8 text-center text-muted-foreground">No users found.</td></tr>
+            <TableRow>
+              <TableCell colSpan={showActiveTickets ? 6 : 5} className="text-center py-8 text-muted-foreground">
+                No users found.
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
-    </div>
+        </TableBody>
+      </Table>
+    </Card>
   );
 
   return (
@@ -217,90 +238,160 @@ const AdminDashboard = () => {
         {/* Overview Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
           {overviewStats.map((stat) => (
-            <div key={stat.label} className="relative overflow-hidden rounded-xl p-4 text-white shadow-lg" style={{ background: stat.gradient }}>
-              <p className="text-2xl font-extrabold">{stat.value}</p>
-              <p className="text-[11px] font-medium opacity-80 mt-0.5">{stat.label}</p>
-            </div>
+            <Card key={stat.label} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <p className="text-2xl font-extrabold text-foreground">{stat.value}</p>
+                <p className={`text-[11px] font-medium mt-0.5 ${stat.color}`}>{stat.label}</p>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2 mb-6 flex-wrap">
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                activeTab === tab.key
-                  ? "text-white shadow-lg"
-                  : "bg-card border text-muted-foreground hover:text-foreground hover:border-[#D2B48C]/30"
-              }`}
-              style={activeTab === tab.key ? { background: "#D2B48C" } : undefined}
-            >
-              {tab.label}
-              <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.key ? "bg-white/20" : "bg-muted"}`}>
-                {tab.count}
-              </span>
-            </button>
+        <Tabs defaultValue="employees" className="space-y-6">
+          <TabsList className="bg-muted/50 p-1">
+            <TabsTrigger value="employees" className="gap-2">
+              Employees
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">{employees.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="it" className="gap-2">
+              IT Staff
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">{itPersons.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="tickets" className="gap-2">
+              All Tickets
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">{tickets.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="assets" className="gap-2">
+              Assets
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">{availableAssets.length}</Badge>
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Employees / IT Staff tabs */}
+          {(["employees", "it"] as const).map((tabKey) => (
+            <TabsContent key={tabKey} value={tabKey} className="space-y-6">
+              {/* Add user form */}
+              <Card>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-base">Add New User</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {userError && <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-4">{userError}</div>}
+                  {userSuccess && <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-sm p-3 rounded-lg mb-4">{userSuccess}</div>}
+                  <form onSubmit={handleCreateUser} className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                    <Input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="Full name" />
+                    <Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required placeholder="Email address" />
+                    <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} placeholder="Password (6+ chars)" />
+                    <Select value={newRole} onValueChange={(v) => setNewRole(v as UserRole)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {roleOptions.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Button type="submit" disabled={userSubmitting}>
+                      {userSubmitting ? "Adding..." : "Add User"}
+                    </Button>
+                  </form>
+                </CardContent>
+              </Card>
+
+              {tabKey === "employees" && renderUserTable(employees, false)}
+              {tabKey === "it" && renderUserTable(itPersons, true)}
+            </TabsContent>
           ))}
-        </div>
 
-        {/* User, Tickets, Assets rendering as before, unchanged */}
-        {(activeTab === "employees" || activeTab === "it") && (
-          <div className="bg-card rounded-xl border p-6 shadow-sm mb-6">
-            <h3 className="text-base font-bold text-foreground">Add New User</h3>
-            {userError && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl mb-4">{userError}</div>}
-            {userSuccess && <div className="bg-[#D2B48C]/10 border border-[#D2B48C]/20 text-[#D2B48C] text-sm p-3 rounded-xl mb-4">{userSuccess}</div>}
-            <form onSubmit={handleCreateUser} className="grid grid-cols-1 md:grid-cols-5 gap-3">
-              <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} required placeholder="Full name" className={inputClass} />
-              <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} required placeholder="Email address" className={inputClass} />
-              <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required minLength={6} placeholder="Password (6+ chars)" className={inputClass} />
-              <select value={newRole} onChange={(e) => setNewRole(e.target.value as UserRole)} className={inputClass}>
-                {roleOptions.map((opt) => (<option key={opt.value} value={opt.value}>{opt.label}</option>))}
-              </select>
-              <button type="submit" disabled={userSubmitting} className="py-2.5 px-4 rounded-xl font-semibold text-white text-sm transition-all hover:shadow-lg disabled:opacity-50" style={{ background: "#D2B48C" }}>
-                {userSubmitting ? "Adding..." : "Add User"}
-              </button>
-            </form>
-          </div>
-        )}
+          {/* Tickets tab */}
+          <TabsContent value="tickets" className="space-y-6">
+            {tickets.length === 0 ? (
+              <Card className="p-12 text-center">
+                <CardContent className="p-0">
+                  <p className="text-muted-foreground">No tickets yet.</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {tickets.map((ticket, i) => (
+                  <div key={ticket.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
+                    <TicketCard ticket={ticket} onClick={setSelectedTicket} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-        {activeTab === "employees" && renderUserTable(employees, false)}
-        {activeTab === "it" && renderUserTable(itPersons, true)}
+          {/* Assets tab */}
+          <TabsContent value="assets" className="space-y-6">
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-base">Add New Asset</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {assetError && <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-lg mb-4">{assetError}</div>}
+                <form onSubmit={handleCreateAsset} className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                  <Input id="asset-name" type="text" value={assetName} onChange={(e) => setAssetName(e.target.value)} required placeholder="Asset name" />
+                  <Input id="asset-serial" type="text" value={assetSerial} onChange={(e) => setAssetSerial(e.target.value)} required placeholder="Serial number" />
+                  <Input id="asset-description" type="text" value={assetDesc} onChange={(e) => setAssetDesc(e.target.value)} placeholder="Description (optional)" />
+                  <Button id="asset-submit" type="submit" disabled={assetSubmitting}>
+                    {assetSubmitting ? "Adding..." : "Add Asset"}
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
 
-        {activeTab === "tickets" && (
-          tickets.length === 0 ? (
-            <div className="bg-card rounded-xl border p-12 text-center shadow-sm">
-              <p className="text-muted-foreground">No tickets yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tickets.map((ticket, i) => (
-                <div key={ticket.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
-                  <TicketCard ticket={ticket} onClick={setSelectedTicket} />
-                </div>
-              ))}
-            </div>
-          )
-        )}
-
-        {activeTab === "assets" && (
-          <div className="space-y-6">
-            <div className="bg-card rounded-xl border p-6 shadow-sm">
-              <h3 className="text-base font-bold text-foreground">Add New Asset</h3>
-              {assetError && <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl mb-4">{assetError}</div>}
-              <form onSubmit={handleCreateAsset} className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <input id="asset-name" type="text" value={assetName} onChange={(e) => setAssetName(e.target.value)} required placeholder="Asset name" className={inputClass} />
-                <input id="asset-serial" type="text" value={assetSerial} onChange={(e) => setAssetSerial(e.target.value)} required placeholder="Serial number" className={inputClass} />
-                <input id="asset-description" type="text" value={assetDesc} onChange={(e) => setAssetDesc(e.target.value)} placeholder="Description (optional)" className={inputClass} />
-                <button id="asset-submit" type="submit" disabled={assetSubmitting} className="py-2.5 px-4 rounded-xl font-semibold text-white text-sm transition-all hover:shadow-lg disabled:opacity-50" style={{ background: "#D2B48C" }}>
-                  {assetSubmitting ? "Adding..." : "Add Asset"}
-                </button>
-              </form>
-            </div>
-            {/* Asset table as before */}
-          </div>
-        )}
+            {assets.length > 0 && (
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Serial Number</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Assigned To</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {assets.map((asset, i) => (
+                      <TableRow key={asset.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
+                        <TableCell className="font-semibold">{asset.name}</TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">{asset.serial_number}</TableCell>
+                        <TableCell className="text-muted-foreground">{asset.description || "—"}</TableCell>
+                        <TableCell>
+                          <Badge variant={asset.status === "AVAILABLE" ? "secondary" : "outline"} className="gap-1.5">
+                            <span className={`w-1.5 h-1.5 rounded-full ${asset.status === "AVAILABLE" ? "bg-emerald-500" : "bg-amber-500"}`} />
+                            {asset.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {asset.assignedUser ? (
+                            <span className="font-medium">{asset.assignedUser.name}</span>
+                          ) : (
+                            <span className="text-muted-foreground">—</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10 text-xs h-7"
+                            onClick={() => handleDeleteAsset(asset.id)}
+                          >
+                            Delete
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+            )}
+          </TabsContent>
+        </Tabs>
       </main>
 
       {selectedTicket && (

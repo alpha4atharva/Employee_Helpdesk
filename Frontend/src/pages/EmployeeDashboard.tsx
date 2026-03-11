@@ -7,6 +7,7 @@ import TicketDetail from "../components/TicketDetail";
 import { useAuth } from "../contexts/AuthContext";
 import * as ticketService from "../services/ticketService";
 import type { Ticket, TicketPriority } from "../types/types";
+import { Card, CardContent } from "@/components/ui/card";
 
 const EmployeeDashboard = () => {
   const { user } = useAuth();
@@ -55,6 +56,42 @@ const EmployeeDashboard = () => {
   const openCount = tickets.filter((t) => t.status === "OPEN" || t.status === "IN_PROGRESS").length;
   const resolvedCount = tickets.filter((t) => t.status === "RESOLVED").length;
 
+  const stats = [
+    {
+      label: "Total Tickets",
+      value: tickets.length,
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+        </svg>
+      ),
+      color: "text-primary",
+      bg: "bg-primary/10",
+    },
+    {
+      label: "Active",
+      value: openCount,
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      ),
+      color: "text-amber-500",
+      bg: "bg-amber-500/10",
+    },
+    {
+      label: "Resolved",
+      value: resolvedCount,
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      ),
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -63,7 +100,7 @@ const EmployeeDashboard = () => {
         {/* Welcome */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground">
-            Welcome back, {user.name} 
+            Welcome back, {user.name}
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
             Submit a new ticket or track your existing requests.
@@ -72,20 +109,18 @@ const EmployeeDashboard = () => {
 
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          {[
-            { label: "Total Tickets", value: tickets.length, color: "#D2B48C" }, // light brown
-            { label: "Active", value: openCount, color: "#D2B48C"},
-            { label: "Resolved", value: resolvedCount, color: "#D2B48C" },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="relative overflow-hidden rounded-xl p-5 text-black shadow-md"
-              style={{ backgroundColor: stat.color }}
-            >
-              <span className="absolute top-3 right-3 text-2xl opacity-30">{stat.icon}</span>
-              <p className="text-3xl font-extrabold">{stat.value}</p>
-              <p className="text-sm font-medium opacity-80 mt-1">{stat.label}</p>
-            </div>
+          {stats.map((stat) => (
+            <Card key={stat.label} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-5 flex items-start justify-between">
+                <div>
+                  <p className="text-3xl font-extrabold text-foreground">{stat.value}</p>
+                  <p className="text-sm font-medium text-muted-foreground mt-1">{stat.label}</p>
+                </div>
+                <div className={`p-2.5 rounded-xl ${stat.bg} ${stat.color}`}>
+                  {stat.icon}
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
 
@@ -95,7 +130,7 @@ const EmployeeDashboard = () => {
           <div>
             <TicketForm onSubmit={handleCreate} isSubmitting={submitting} />
             {error && (
-              <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl mt-3">
+              <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm p-3 rounded-xl mt-3">
                 {error}
               </div>
             )}
@@ -110,10 +145,16 @@ const EmployeeDashboard = () => {
               </span>
             </div>
             {tickets.length === 0 ? (
-              <div className="bg-card rounded-xl border p-12 text-center shadow-sm">
-                <span className="text-4xl mb-3 block"></span>
-                <p className="text-muted-foreground">No tickets yet. Create your first one!</p>
-              </div>
+              <Card className="p-12 text-center">
+                <CardContent className="flex flex-col items-center gap-3 p-0">
+                  <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 0 1 0 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 0 1 0-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375Z" />
+                    </svg>
+                  </div>
+                  <p className="text-muted-foreground">No tickets yet. Create your first one!</p>
+                </CardContent>
+              </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {tickets.map((ticket, i) => (

@@ -1,5 +1,5 @@
 /**
- * ITDashboard - IT agent view with tickets and asset inventory (icons removed)
+ * ITDashboard - IT agent view with tickets and asset inventory using shadcn/ui.
  */
 
 import { useState, useEffect } from "react";
@@ -10,9 +10,19 @@ import { useAuth } from "../contexts/AuthContext";
 import * as ticketService from "../services/ticketService";
 import * as assetService from "../services/assetService";
 import type { Ticket, Asset } from "../types/types";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type FilterType = "all" | "open" | "in-progress" | "resolved" | "breached";
-type TabType = "tickets" | "assets";
 
 const ITDashboard = () => {
   const { user } = useAuth();
@@ -20,7 +30,6 @@ const ITDashboard = () => {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [filter, setFilter] = useState<FilterType>("all");
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
-  const [activeTab, setActiveTab] = useState<TabType>("tickets");
 
   useEffect(() => { loadData(); }, []);
 
@@ -60,12 +69,12 @@ const ITDashboard = () => {
 
   if (!user) return null;
 
-  const stats: { label: string; count: number; value: FilterType; gradient: string }[] = [
-    { label: "Total", count: tickets.length, value: "all", gradient: "#D2B48C" },
-    { label: "Open", count: tickets.filter((t) => t.status === "OPEN").length, value: "open", gradient: "#D2B48C" },
-    { label: "In Progress", count: tickets.filter((t) => t.status === "IN_PROGRESS").length, value: "in-progress", gradient: "#D2B48C" },
-    { label: "Resolved", count: tickets.filter((t) => t.status === "RESOLVED").length, value: "resolved", gradient: "#D2B48C" },
-    { label: "Breached", count: tickets.filter((t) => t.status === "SLA_BREACHED").length, value: "breached", gradient: "var(--gradient-danger)" },
+  const stats: { label: string; count: number; value: FilterType; color: string; bg: string }[] = [
+    { label: "Total", count: tickets.length, value: "all", color: "text-primary", bg: "bg-primary/10" },
+    { label: "Open", count: tickets.filter((t) => t.status === "OPEN").length, value: "open", color: "text-amber-500", bg: "bg-amber-500/10" },
+    { label: "In Progress", count: tickets.filter((t) => t.status === "IN_PROGRESS").length, value: "in-progress", color: "text-blue-500", bg: "bg-blue-500/10" },
+    { label: "Resolved", count: tickets.filter((t) => t.status === "RESOLVED").length, value: "resolved", color: "text-emerald-500", bg: "bg-emerald-500/10" },
+    { label: "Breached", count: tickets.filter((t) => t.status === "SLA_BREACHED").length, value: "breached", color: "text-red-500", bg: "bg-red-500/10" },
   ];
 
   return (
@@ -80,57 +89,45 @@ const ITDashboard = () => {
           </div>
         </div>
 
-        {/* Tab buttons */}
-        <div className="flex gap-2 mb-6">
-          {(["tickets", "assets"] as const).map((tabKey) => (
-            <button
-              key={tabKey}
-              onClick={() => setActiveTab(tabKey)}
-              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                activeTab === tabKey
-                  ? "text-white shadow-lg"
-                  : "bg-card border text-muted-foreground hover:text-foreground hover:border-[#D2B48C]/30"
-              }`}
-              style={activeTab === tabKey ? { background: "#D2B48C" } : undefined}
-            >
-              {tabKey === "tickets" ? "Tickets" : "Asset Inventory"}
-              <span className={`ml-2 text-xs px-1.5 py-0.5 rounded-full ${activeTab === tabKey ? "bg-white/20" : "bg-muted"}`}>
-                {tabKey === "tickets" ? tickets.length : assets.length}
-              </span>
-            </button>
-          ))}
-        </div>
+        <Tabs defaultValue="tickets" className="space-y-6">
+          <TabsList className="bg-muted/50 p-1">
+            <TabsTrigger value="tickets" className="gap-2">
+              Tickets
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">{tickets.length}</Badge>
+            </TabsTrigger>
+            <TabsTrigger value="assets" className="gap-2">
+              Asset Inventory
+              <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">{assets.length}</Badge>
+            </TabsTrigger>
+          </TabsList>
 
-        {/* TICKETS TAB */}
-        {activeTab === "tickets" && (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+          {/* TICKETS TAB */}
+          <TabsContent value="tickets" className="space-y-6">
+            {/* Filter stats */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               {stats.map((stat) => (
-                <button
+                <Card
                   key={stat.value}
-                  onClick={() => setFilter(stat.value)}
-                  className={`relative overflow-hidden rounded-xl p-4 text-left transition-all duration-200 ${
-                    filter === stat.value
-                      ? "text-white shadow-lg scale-[1.02]"
-                      : "bg-card border hover:border-[#D2B48C]/30"
+                  className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
+                    filter === stat.value ? "ring-2 ring-primary shadow-md" : ""
                   }`}
-                  style={filter === stat.value ? { background: stat.gradient } : undefined}
+                  onClick={() => setFilter(stat.value)}
                 >
-                  <p className={`text-2xl font-extrabold ${filter !== stat.value ? "text-foreground" : ""}`}>
-                    {stat.count}
-                  </p>
-                  <p className={`text-xs font-medium mt-0.5 ${filter !== stat.value ? "text-muted-foreground" : "opacity-80"}`}>
-                    {stat.label}
-                  </p>
-                </button>
+                  <CardContent className="p-4">
+                    <p className="text-2xl font-extrabold text-foreground">{stat.count}</p>
+                    <p className={`text-xs font-medium mt-0.5 ${stat.color}`}>{stat.label}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
-            {/* Tickets */}
+            {/* Tickets grid */}
             {filteredTickets.length === 0 ? (
-              <div className="bg-card rounded-xl border p-12 text-center shadow-sm">
-                <p className="text-muted-foreground">No tickets match this filter.</p>
-              </div>
+              <Card className="p-12 text-center">
+                <CardContent className="p-0">
+                  <p className="text-muted-foreground">No tickets match this filter.</p>
+                </CardContent>
+              </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredTickets.map((ticket, i) => (
@@ -144,77 +141,79 @@ const ITDashboard = () => {
                 ))}
               </div>
             )}
-          </>
-        )}
+          </TabsContent>
 
-        {/* ASSET INVENTORY TAB */}
-        {activeTab === "assets" && (
-          <>
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              {[ 
-                { label: "Total Assets", value: assets.length, gradient: "#D2B48C" },
-                { label: "Available", value: availableAssets.length, gradient: "#D2B48C" },
-                { label: "Assigned", value: assignedAssets.length, gradient: "#D2B48C" },
+          {/* ASSET INVENTORY TAB */}
+          <TabsContent value="assets" className="space-y-6">
+            {/* Asset stats */}
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { label: "Total Assets", value: assets.length, color: "text-primary", bg: "bg-primary/10" },
+                { label: "Available", value: availableAssets.length, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+                { label: "Assigned", value: assignedAssets.length, color: "text-amber-500", bg: "bg-amber-500/10" },
               ].map((stat) => (
-                <div key={stat.label} className="relative overflow-hidden rounded-xl p-5 text-white shadow-lg" style={{ background: stat.gradient }}>
-                  <p className="text-3xl font-extrabold">{stat.value}</p>
-                  <p className="text-sm font-medium opacity-80 mt-1">{stat.label}</p>
-                </div>
+                <Card key={stat.label} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-5 flex items-start justify-between">
+                    <div>
+                      <p className="text-3xl font-extrabold text-foreground">{stat.value}</p>
+                      <p className={`text-sm font-medium mt-1 ${stat.color}`}>{stat.label}</p>
+                    </div>
+                    <div className={`p-2.5 rounded-xl ${stat.bg}`}>
+                      <svg xmlns="http://www.w3.org/2000/svg" className={`w-5 h-5 ${stat.color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
+                      </svg>
+                    </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
 
             {/* Asset table */}
             {assets.length === 0 ? (
-              <div className="bg-card rounded-xl border p-12 text-center shadow-sm">
-                <p className="text-muted-foreground">No assets in inventory. Ask an Admin to add assets.</p>
-              </div>
+              <Card className="p-12 text-center">
+                <CardContent className="p-0">
+                  <p className="text-muted-foreground">No assets in inventory. Ask an Admin to add assets.</p>
+                </CardContent>
+              </Card>
             ) : (
-              <div className="bg-card rounded-xl border shadow-sm overflow-hidden">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b bg-muted/50">
-                      <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Name</th>
-                      <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Serial Number</th>
-                      <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Description</th>
-                      <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Status</th>
-                      <th className="text-left p-4 font-semibold text-xs uppercase tracking-wider text-muted-foreground">Assigned To</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+              <Card>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Serial Number</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Assigned To</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
                     {assets.map((asset, i) => (
-                      <tr key={asset.id} className="border-b last:border-0 hover:bg-muted/30 transition-colors animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
-                        <td className="p-4 font-semibold text-foreground">{asset.name}</td>
-                        <td className="p-4 font-mono text-xs text-muted-foreground">{asset.serial_number}</td>
-                        <td className="p-4 text-muted-foreground">{asset.description || "—"}</td>
-                        <td className="p-4">
-                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 text-xs rounded-full font-semibold ${
-                            asset.status === "AVAILABLE"
-                              ? "bg-[#D2B48C]/10 text-[#D2B48C]"
-                              : "bg-[#D2B48C]/10 text-[#D2B48C]"
-                          }`}>
-                            <span className={`w-1.5 h-1.5 rounded-full ${
-                              asset.status === "AVAILABLE" ? "bg-[#D2B48C]" : "bg-[#D2B48C]"
-                            }`}></span>
+                      <TableRow key={asset.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 40}ms` }}>
+                        <TableCell className="font-semibold">{asset.name}</TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">{asset.serial_number}</TableCell>
+                        <TableCell className="text-muted-foreground">{asset.description || "—"}</TableCell>
+                        <TableCell>
+                          <Badge variant={asset.status === "AVAILABLE" ? "secondary" : "outline"} className="gap-1.5">
+                            <span className={`w-1.5 h-1.5 rounded-full ${asset.status === "AVAILABLE" ? "bg-emerald-500" : "bg-amber-500"}`} />
                             {asset.status}
-                          </span>
-                        </td>
-                        <td className="p-4">
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
                           {asset.assignedUser ? (
-                            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground">
-                              {asset.assignedUser.name}
-                            </span>
+                            <span className="font-medium">{asset.assignedUser.name}</span>
                           ) : (
                             <span className="text-muted-foreground">—</span>
                           )}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </TableBody>
+                </Table>
+              </Card>
             )}
-          </>
-        )}
+          </TabsContent>
+        </Tabs>
       </main>
 
       {selectedTicket && (
