@@ -44,7 +44,7 @@ const TicketForm = ({ onSubmit, isSubmitting }: TicketFormProps) => {
       className="bg-card rounded-xl border p-6 shadow-sm space-y-4"
     >
       <div className="flex items-center gap-2 pb-3 border-b border-border">
-        <span className="text-lg">✏️</span>
+        <span className="text-lg"></span>
         <h2 className="text-base font-bold text-foreground">New Ticket</h2>
       </div>
 
@@ -99,15 +99,17 @@ const TicketForm = ({ onSubmit, isSubmitting }: TicketFormProps) => {
         </div>
       </div>
 
-      <button
-        id="ticket-submit"
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full py-2.5 px-4 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg disabled:opacity-50 text-sm"
-        style={{ background: "var(--gradient-primary)" }}
-      >
-        {isSubmitting ? "Submitting..." : "Submit Ticket"}
-      </button>
+     <button
+  id="ticket-submit"
+  type="submit"
+  disabled={isSubmitting}
+  className="w-full py-2.5 px-4 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg disabled:opacity-50 text-sm"
+  style={{
+    background: "linear-gradient(to right, #000000, #d3d3d3)", // matches navbar gradient
+  }}
+>
+  {isSubmitting ? "Submitting..." : "Submit Ticket"}
+</button>
     </form>
   );
 };

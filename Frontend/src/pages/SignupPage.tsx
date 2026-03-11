@@ -1,5 +1,5 @@
 /**
- * SignupPage - registration with gradient accent.
+ * SignupPage - Registration page with dark gray background and transparent form.
  */
 
 import { useState } from "react";
@@ -50,17 +50,8 @@ const SignupPage = () => {
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden"
       style={{ background: "linear-gradient(135deg, hsl(199, 65%, 50%), hsl(130, 43%, 55%), hsl(41, 71%, 49%))" }}
     >
-      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] rounded-full opacity-20"
-        style={{ background: "radial-gradient(circle, hsl(262 80% 60%), transparent 70%)" }} />
-      <div className="absolute bottom-[-15%] right-[-10%] w-[500px] h-[500px] rounded-full opacity-15"
-        style={{ background: "radial-gradient(circle, hsl(234 85% 60%), transparent 70%)" }} />
-
       <div className="w-full max-w-md relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl"
-            style={{ background: "var(--gradient-primary)" }}>
-            🎫
-          </div>
           <h1 className="text-3xl font-bold text-white">
             Create Account
           </h1>
@@ -71,16 +62,16 @@ const SignupPage = () => {
 
         <form
           onSubmit={handleSignup}
-          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 shadow-2xl space-y-5"
+          className="bg-transparent border border-white/20 rounded-2xl p-8 shadow-lg space-y-5"
         >
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm p-3 rounded-xl">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-500 text-sm p-3 rounded-xl">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-1.5">Full Name</label>
+            <label className="block text-sm font-medium text-white mb-1.5">Full Name</label>
             <input
               id="signup-name"
               type="text"
@@ -88,12 +79,12 @@ const SignupPage = () => {
               onChange={(e) => setName(e.target.value)}
               required
               placeholder="John Doe"
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[hsl(234,85%,60%)] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-white mb-1.5">Email</label>
             <input
               id="signup-email"
               type="email"
@@ -101,12 +92,12 @@ const SignupPage = () => {
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@company.com"
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[hsl(234,85%,60%)] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-1.5">Password</label>
+            <label className="block text-sm font-medium text-white mb-1.5">Password</label>
             <input
               id="signup-password"
               type="password"
@@ -115,21 +106,21 @@ const SignupPage = () => {
               required
               minLength={6}
               placeholder="At least 6 characters"
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-[hsl(234,85%,60%)] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/70 mb-1.5">Role</label>
+            <label className="block text-sm font-medium text-white mb-1.5">Role</label>
             <select
               id="signup-role"
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-[hsl(234,85%,60%)] focus:border-transparent transition-all"
+              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-white/40 transition-all"
             >
-              <option value="EMPLOYEE" className="bg-gray-900">Employee</option>
-              <option value="IT_AGENT" className="bg-gray-900">IT Support</option>
-              
+              <option value="EMPLOYEE">Employee</option>
+              <option value="IT_AGENT">IT Support</option>
+              <option value="ADMIN">Admin</option>
             </select>
           </div>
 
@@ -137,17 +128,17 @@ const SignupPage = () => {
             id="signup-submit"
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 rounded-xl font-semibold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg disabled:opacity-50"
-            style={{ background: "var(--gradient-primary)" }}
+            className="w-full py-3 px-4 rounded-xl font-semibold text-black transition-all duration-200 hover:opacity-90 hover:shadow-lg disabled:opacity-50"
+            style={{ backgroundColor: "#d3d3d3" }} // light gray button
           >
             {loading ? "Creating account..." : "Create Account"}
           </button>
 
-          <p className="text-center text-sm text-white/40">
+          <p className="text-center text-sm text-white/50">
             Already have an account?{" "}
             <Link
               to="/login"
-              className="text-[hsl(234,85%,70%)] font-medium hover:underline"
+              className="text-white font-medium hover:underline"
             >
               Sign In
             </Link>

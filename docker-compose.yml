@@ -1,0 +1,39 @@
+services:
+
+  postgres:
+    image: postgres:15
+    container_name: mini_project_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "Qwe123!@#"
+      POSTGRES_DB: mini-project
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./Backend
+    container_name: mini_project_backend
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+    env_file:
+      - ./Backend/.env
+    environment:
+      DB_HOST: postgres
+
+  frontend:
+    build: ./Frontend
+    container_name: mini_project_frontend
+    restart: always
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

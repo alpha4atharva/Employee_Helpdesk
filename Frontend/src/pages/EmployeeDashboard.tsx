@@ -63,7 +63,7 @@ const EmployeeDashboard = () => {
         {/* Welcome */}
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-foreground">
-            Welcome back, {user.name} 👋
+            Welcome back, {user.name} 
           </h2>
           <p className="text-muted-foreground text-sm mt-1">
             Submit a new ticket or track your existing requests.
@@ -73,11 +73,15 @@ const EmployeeDashboard = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           {[
-            { label: "Total Tickets", value: tickets.length, gradient: "var(--gradient-primary)", icon: "🎫" },
-            { label: "Active", value: openCount, gradient: "var(--gradient-warning)", icon: "🔄" },
-            { label: "Resolved", value: resolvedCount, gradient: "var(--gradient-success)", icon: "✅" },
+            { label: "Total Tickets", value: tickets.length, color: "#D2B48C" }, // light brown
+            { label: "Active", value: openCount, color: "#D2B48C"},
+            { label: "Resolved", value: resolvedCount, color: "#D2B48C" },
           ].map((stat) => (
-            <div key={stat.label} className="relative overflow-hidden rounded-xl p-5 text-white shadow-lg" style={{ background: stat.gradient }}>
+            <div
+              key={stat.label}
+              className="relative overflow-hidden rounded-xl p-5 text-black shadow-md"
+              style={{ backgroundColor: stat.color }}
+            >
               <span className="absolute top-3 right-3 text-2xl opacity-30">{stat.icon}</span>
               <p className="text-3xl font-extrabold">{stat.value}</p>
               <p className="text-sm font-medium opacity-80 mt-1">{stat.label}</p>
@@ -107,7 +111,7 @@ const EmployeeDashboard = () => {
             </div>
             {tickets.length === 0 ? (
               <div className="bg-card rounded-xl border p-12 text-center shadow-sm">
-                <span className="text-4xl mb-3 block">📭</span>
+                <span className="text-4xl mb-3 block"></span>
                 <p className="text-muted-foreground">No tickets yet. Create your first one!</p>
               </div>
             ) : (

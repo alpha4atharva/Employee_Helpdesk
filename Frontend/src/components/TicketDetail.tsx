@@ -1,5 +1,5 @@
 /**
- * TicketDetail - Premium styled detail modal with messaging/chat and asset assignment.
+ * TicketDetail - Detail modal without icons, maintaining original functionality.
  */
 
 import { useState, useEffect, useRef } from "react";
@@ -31,7 +31,6 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
   const [loadingMessages, setLoadingMessages] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Asset assignment state
   const [availableAssets, setAvailableAssets] = useState<Asset[]>([]);
   const [selectedAssetId, setSelectedAssetId] = useState<string>("");
   const [assigningAsset, setAssigningAsset] = useState(false);
@@ -49,9 +48,7 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
 
   useEffect(() => {
     loadMessages();
-    if (canAssignAsset) {
-      loadAvailableAssets();
-    }
+    if (canAssignAsset) loadAvailableAssets();
   }, [ticket.id]);
 
   useEffect(() => {
@@ -132,7 +129,6 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
               #{ticket.id}
             </span>
             <span className={`text-xs px-2.5 py-1 rounded-full font-medium flex items-center gap-1.5 ${status.color}`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`}></span>
               {status.label}
             </span>
           </div>
@@ -153,15 +149,15 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {[
-              { label: "Created by", value: ticket.createdBy?.name || "—", icon: "👤" },
-              { label: "Assigned to", value: ticket.assignedTo?.name || "Unassigned", icon: "🛠️" },
-              { label: "Priority", value: ticket.priority, icon: "⚡" },
-              ...(ticket.assetType ? [{ label: "Asset Type", value: ticket.assetType, icon: "📦" }] : []),
-              { label: "Created", value: new Date(ticket.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }), icon: "📅" },
-              ...(ticket.slaDeadline ? [{ label: "SLA Deadline", value: new Date(ticket.slaDeadline).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }), icon: "⏱️" }] : []),
+              { label: "Created by", value: ticket.createdBy?.name || "—" },
+              { label: "Assigned to", value: ticket.assignedTo?.name || "Unassigned" },
+              { label: "Priority", value: ticket.priority },
+              ...(ticket.assetType ? [{ label: "Asset Type", value: ticket.assetType }] : []),
+              { label: "Created", value: new Date(ticket.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) },
+              ...(ticket.slaDeadline ? [{ label: "SLA Deadline", value: new Date(ticket.slaDeadline).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) }] : []),
             ].map((item) => (
               <div key={item.label} className="bg-muted/50 rounded-xl px-3 py-2.5">
-                <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">{item.icon} {item.label}</p>
+                <p className="text-[11px] text-muted-foreground uppercase tracking-wider font-medium">{item.label}</p>
                 <p className="text-sm font-semibold text-foreground mt-0.5">{item.value}</p>
               </div>
             ))}
@@ -170,7 +166,7 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
           {/* Currently assigned asset */}
           {ticket.asset && (
             <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
-              <p className="text-xs text-emerald-600 uppercase tracking-wider font-semibold mb-2">📦 Assigned Asset</p>
+              <p className="text-xs text-emerald-600 uppercase tracking-wider font-semibold mb-2">Assigned Asset</p>
               <div className="grid grid-cols-3 gap-3 text-sm">
                 <div>
                   <p className="text-muted-foreground text-xs">Name</p>
@@ -188,11 +184,11 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
             </div>
           )}
 
-          {/* Asset Assignment Dropdown (IT Agent only) */}
+          {/* Asset Assignment Dropdown */}
           {canAssignAsset && (
             <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4">
               <p className="text-xs text-blue-500 uppercase tracking-wider font-semibold mb-3">
-                📦 {ticket.asset ? "Reassign Asset" : "Assign Asset"}
+                {ticket.asset ? "Reassign Asset" : "Assign Asset"}
               </p>
               <div className="flex gap-2">
                 <select
@@ -234,7 +230,7 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
                     className="py-2 px-4 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md"
                     style={{ background: "var(--gradient-primary)" }}
                   >
-                    ▶ Start Working
+                    Start Working
                   </button>
                 )}
                 {(ticket.status === "IN_PROGRESS" || ticket.status === "SLA_BREACHED") && (
@@ -243,7 +239,7 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
                     className="py-2 px-4 rounded-xl text-sm font-semibold text-white transition-all hover:shadow-md"
                     style={{ background: "var(--gradient-success)" }}
                   >
-                    ✓ Mark Resolved
+                    Mark Resolved
                   </button>
                 )}
               </div>
@@ -253,7 +249,7 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
         {/* Messages Thread */}
         <div className="flex-1 overflow-y-auto p-5 space-y-3 min-h-[150px]">
           <p className="text-xs text-muted-foreground uppercase tracking-wider font-semibold mb-2">
-            💬 Conversation
+            Conversation
           </p>
           {loadingMessages ? (
             <div className="flex items-center justify-center py-8">
@@ -270,9 +266,7 @@ const TicketDetail = ({ ticket, onClose, onTicketUpdate }: TicketDetailProps) =>
                 <div key={msg.id} className={`flex ${isMe ? "justify-end" : "justify-start"}`}>
                   <div
                     className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
-                      isMe
-                        ? "text-white rounded-br-md"
-                        : "bg-muted text-foreground rounded-bl-md"
+                      isMe ? "text-white rounded-br-md" : "bg-muted text-foreground rounded-bl-md"
                     }`}
                     style={isMe ? { background: "var(--gradient-primary)" } : undefined}
                   >

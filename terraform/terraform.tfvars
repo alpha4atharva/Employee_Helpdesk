@@ -1,0 +1,10 @@
+# Customize these values as needed
+subscription_id     = "ef45b9e7-f027-476b-824f-a98b3c50e0ce"
+resource_group_name = "ehd-rg"
+location            = "East Asia"
+environment         = "dev"
+vnet_name           = "ehd-vnet"
+subnet_name         = "ehd-subnet"
+vm_name             = "ehd-vm"
+vm_size             = "Standard_B2s_v2"
+admin_username      = "azureuser"

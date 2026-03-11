@@ -1,0 +1,37 @@
+name: Deploy to Azure VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          script: |
+            cd ~/Ticketing-System
+            git fetch origin
+            git reset --hard origin/main
+            sed -i 's|build: ./backend|build: ./Backend|' docker-compose.yml
+            sed -i 's|./backend/.env|./Backend/.env|' docker-compose.yml
+            sed -i 's|build: ./frontend|build: ./Frontend|' docker-compose.yml
+            cat > Backend/.env << 'EOF'
+            DB_HOST=postgres
+            DB_PORT=5432
+            DB_USERNAME=postgres
+            DB_PASSWORD=Qwe123!@#
+            DB_NAME=mini-project
+            JWT_SECRET=supersecretjwtkey2024
+            PORT=3000
+            EOF
+            docker compose down
+            docker compose up --build -d
+            docker image prune -f
