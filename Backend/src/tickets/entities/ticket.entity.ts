@@ -9,8 +9,8 @@ import {
 import { User } from '../../users/entities/user.entity';
 import { TicketStatus } from '../../common/enums/ticket-status.enum';
 import { TicketPriority } from '../../common/enums/ticket-priority.enum';
-import { Message } from 'src/messages/entities/message.entity';
-import { Asset } from 'src/assets/entities/asset.entity';
+import { Message } from '../../messages/entities/message.entity';
+import { Asset } from '../../assets/entities/asset.entity';
 
 @Entity()
 export class Ticket {
@@ -24,7 +24,6 @@ export class Ticket {
   description: string;
 
   @Column({
-    type: 'enum',
     enum: TicketPriority,
     default: TicketPriority.MEDIUM,
   })
@@ -34,7 +33,6 @@ export class Ticket {
   assetType: string;
 
   @Column({
-    type: 'enum',
     enum: TicketStatus,
     default: TicketStatus.OPEN,
   })
@@ -50,7 +48,7 @@ export class Ticket {
   })
   assignedTo: User;
 
-  @Column({ type: 'timestamp', nullable: true })
+  @Column({ nullable: true })
   slaDeadline: Date;
 
   @CreateDateColumn()

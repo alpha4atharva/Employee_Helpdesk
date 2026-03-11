@@ -11,12 +11,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { AssetsModule } from './assets/assets.module';
 @Module({
   imports: [AuthModule, UsersModule, TicketsModule, MessagesModule, SlaModule, TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT || '5432'),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      type: 'sqlite',
+      database: 'db.sqlite',
       autoLoadEntities: true,
       synchronize: true, 
     }),
